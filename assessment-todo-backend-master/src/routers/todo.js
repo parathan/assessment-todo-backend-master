@@ -39,6 +39,7 @@ export default ({todoRepository}) => {
         }
     });
 
+    // list all todos for current user
     router.get('/', auth, async (req, res) => {
         try {
             let session = verifyToken(req.cookies['todox-session']);
