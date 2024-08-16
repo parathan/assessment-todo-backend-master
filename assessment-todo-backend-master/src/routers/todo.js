@@ -39,5 +39,19 @@ export default ({todoRepository}) => {
         }
     });
 
+    router.get('/', auth, async (req, res) => {
+        try {
+            let session = verifyToken(req.cookies['todox-session']);
+
+            let todos = await todoRepository.findAllByUserID(session.userID);
+
+            return res.status(200).send(todos);
+        }
+        catch (err) {
+            console.error(err);
+            return res.status(500).send({error: "Failed to fetch todos."});
+        }
+    });
+
     return router;
 }
