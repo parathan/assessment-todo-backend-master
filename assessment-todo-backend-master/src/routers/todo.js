@@ -18,12 +18,14 @@ export default ({todoRepository}) => {
 
             const todoID = uuidv4();
             const created = dayjs().utc().toISOString();
+            const completed = false;
 
             let newTodo = {
                 ...req.body,
                 todoID,
                 userID: session.userID,
-                created
+                created,
+                completed
             };
 
             if (validateTodo(newTodo)) {

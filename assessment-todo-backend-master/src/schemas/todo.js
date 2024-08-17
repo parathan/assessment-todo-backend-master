@@ -13,6 +13,9 @@ export default {
         "created": {
             "type": "string",
             "examples": ["2021-11-30T23:39:27.060Z"] 
+        },
+        "completed": {
+            "type": "boolean"
         }
     },
     "required": ["todoID", "userID", "name", "created"]
