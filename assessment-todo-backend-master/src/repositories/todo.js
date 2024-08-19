@@ -12,8 +12,23 @@ export default (db) => {
         }).toArray();
     }
 
+    async function updateOneByIDandUserID(todoID, userID, todo) {
+
+        const filter = {
+            todoID: todoID,
+            userID: userID
+        }
+
+        const updateDoc = {
+            $set: todo
+        }
+
+        return await collection.updateOne(filter, updateDoc);
+    }
+
     return {
         insertOne,
-        findAllByUserID
+        findAllByUserID,
+        updateOneByIDandUserID
     };
 };

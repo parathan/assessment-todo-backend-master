@@ -18,5 +18,5 @@ export default {
             "type": "boolean"
         }
     },
-    "required": ["todoID", "userID", "name", "created"]
+    "required": ["todoID", "userID", "name", "created", "completed"]
 };

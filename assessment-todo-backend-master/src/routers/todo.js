@@ -48,11 +48,45 @@ export default ({todoRepository}) => {
 
             let todos = await todoRepository.findAllByUserID(session.userID);
 
+            const validatedTodos = todos.map((todo) => {
+                return {
+                    ...todo,
+                    name: todo.name || 'Unnamed Todo',
+                    completed: todo.completed || false,
+                    created: dayjs(todo.created).utc().format()
+                }
+            });
+
+            todos.sort((a, b) => {
+                return new Date(b.created) - new Date(a.created);
+            });
+
             return res.status(200).send(todos);
         }
         catch (err) {
             console.error(err);
             return res.status(500).send({error: "Failed to fetch todos."});
+        }
+    });
+
+    // update todo based on given todoID
+    router.put('/:todoID', auth, async (req, res) => {
+        try {
+            let session = verifyToken(req.cookies['todox-session']);
+            const todoID = req.params.todoID;
+            const userID = session.userID;
+            const todo = req.body;
+
+            if (validateTodo(todo)) {
+                await todoRepository.updateOneByIDandUserID(todoID, userID, todo);
+                return res.status(204).end();
+            }
+            console.error(validateTodo.errors);
+            return res.status(400).send({error: "Invalid field used."});
+        }
+        catch (err) {
+            console.error(err);
+            return res.status(500).send({error: "Failed to update todo."});
         }
     });
 
