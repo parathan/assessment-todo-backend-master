@@ -48,20 +48,24 @@ export default ({todoRepository}) => {
 
             let todos = await todoRepository.findAllByUserID(session.userID);
 
+            // Allow flexibility when returning list with missing fields rather than throwing error
             const validatedTodos = todos.map((todo) => {
                 return {
                     ...todo,
                     name: todo.name || 'Unnamed Todo',
-                    completed: todo.completed || false,
-                    created: dayjs(todo.created).utc().format()
+                    todoID: todo.todoID || '',
+                    userID: todo.userID || '',
+                    created: todo.created || dayjs().utc().toISOString(),
+                    completed: todo.completed || false
                 }
             });
 
-            todos.sort((a, b) => {
+            // sort by created
+            validatedTodos.sort((a, b) => {
                 return new Date(b.created) - new Date(a.created);
             });
 
-            return res.status(200).send(todos);
+            return res.status(200).send(validatedTodos);
         }
         catch (err) {
             console.error(err);
@@ -72,6 +76,7 @@ export default ({todoRepository}) => {
     // update todo based on given todoID
     router.put('/:todoID', auth, async (req, res) => {
         try {
+            // Get all session details and id of todo to be updated
             let session = verifyToken(req.cookies['todox-session']);
             const todoID = req.params.todoID;
             const userID = session.userID;
@@ -82,7 +87,7 @@ export default ({todoRepository}) => {
                 return res.status(204).end();
             }
             console.error(validateTodo.errors);
-            return res.status(400).send({error: "Invalid field used."});
+            return res.status(400).send({error: "Error updating todo."});
         }
         catch (err) {
             console.error(err);
